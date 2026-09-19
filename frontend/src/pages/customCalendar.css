@@ -1,0 +1,30 @@
+/* customCalendar.css — HireFlow light theme */
+
+.crazy-calendar {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 10px;
+    color: #0f172a;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 30px -15px rgba(10, 10, 10, 0.15);
+  }
+
+  .crazy-calendar .react-calendar__tile {
+    background: transparent;
+    border-radius: 10px;
+    color: #334155;
+    transition: all 0.3s ease;
+  }
+
+  .crazy-calendar .react-calendar__tile--active {
+    background: #77A719;
+    color: white;
+    font-weight: bold;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(119, 167, 25, 0.4);
+  }
+
+  .crazy-calendar .react-calendar__tile:hover {
+    background-color: rgba(119, 167, 25, 0.12);
+    transform: scale(1.05);
+  }
