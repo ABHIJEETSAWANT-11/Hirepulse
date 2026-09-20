@@ -7,14 +7,14 @@ import axios from "axios"
 // hopping to the next model on a 429 multiplies effective free-tier
 // capacity instead of waiting out a single bucket.
 //
-// Chain verified live against ai.google.dev/gemini-api/docs/models
-// (Sept 2026). Do NOT re-add gemini-1.5-* or gemini-2.0-flash — they
-// are retired/deprecated. Google deprecates models on a fast, rolling
-// cadence: re-check the models page every few months or this chain
-// will silently rot.
+// Chain verified live against the Generative Language API on Sept 2026
+// (this key's project): gemini-2.5-flash / -lite return 404 NOT_FOUND for
+// generateContent, while the aliases below all return 200. Aliases track
+// Google's current recommended model, so the chain survives their fast,
+// rolling deprecation cadence. Re-check if calls start 404-ing.
 const GEMINI_MODELS = [
-  "gemini-2.5-flash", // primary — best price/performance
-  "gemini-2.5-flash-lite", // fallback 1 — cheapest/fastest, separate quota bucket
+  "gemini-flash-latest", // primary — always-current flash alias, best price/performance
+  "gemini-flash-lite-latest", // fallback 1 — cheapest/fastest, separate quota bucket
   "gemini-3.1-flash-lite", // fallback 2 — newest generation, longest runway
 ]
 
