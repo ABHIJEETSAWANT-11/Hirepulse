@@ -89,6 +89,10 @@ plausibly differ from the Python original.
   `gemini-2.5-flash` ✅ stable, `gemini-2.5-flash-lite` ✅ stable
   (docs flag shutdown 2026-10-16 — first to die), `gemini-3.1-flash-lite` ✅
   stable (only the `-preview` variant is shut down).
+- 2026-09-20: user's new key gets 404 NOT_FOUND on `gemini-2.5-flash` /
+  `-lite` generateContent, so the chain now uses rolling aliases verified
+  live with 200s: `gemini-flash-latest` → `gemini-flash-lite-latest` →
+  `gemini-3.1-flash-lite`.
 - OCR fallback verified end-to-end (text-less PDF → rasterize → OCR → text).
 - Temp-dir cleanup runs on success, error, and multer-spill paths.
 - CORS: Node's existing `allowedOrigins` behavior untouched; Python's

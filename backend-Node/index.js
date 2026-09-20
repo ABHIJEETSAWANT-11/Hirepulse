@@ -9,9 +9,11 @@ const PORT = process.env.PORT || 3000
 import connectDB from "./config/db.js"
 
 if (process.env.MONGO_URI) {
-  // Top-level await (ESM): app.listen() below only starts once Atlas is connected,
-  // so no route can hit an unconnected DB on cold start. connectDB() exits the
-  // process with a clear error if the connection fails (10s timeout).
+  // Top-level await (ESM): we try to connect before serving. connectDB() no
+  // longer exits on failure — it logs a checklist and returns null, and the
+  // server starts anyway so the code-only demo login keeps working. DB-backed
+  // routes will fail per-request (global handler returns 500s) until the
+  // connection succeeds.
   await connectDB();
 } else {
   console.log("⚠️ MongoDB not configured. Starting server without database.");
