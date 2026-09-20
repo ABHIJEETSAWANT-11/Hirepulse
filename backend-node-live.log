@@ -1,0 +1,8 @@
+MongoDB connection failed: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/
+→ Checklist: (1) your IP is whitelisted in Atlas → Network Access; (2) the MONGO_URI password is correct — replace <db_password> with your real password; (3) special characters in the password are URL-encoded (e.g. @ → %40).
+Server continuing WITHOUT a database — demo login still works.
+Server listening on port: 3000
+[GEMINI] 2026-09-19T20:58:35.467Z call=interview-chat model=gemini-flash-latest attempt=1 status=503 error=UNAVAILABLE latency=2142ms
+[GEMINI] 2026-09-19T20:58:39.559Z call=interview-chat model=gemini-flash-latest attempt=2 status=503 error=UNAVAILABLE latency=3082ms
+[GEMINI] 2026-09-19T20:58:40.402Z call=interview-chat model=gemini-flash-lite-latest attempt=1 status=ok (STOP) latency=843ms
+[GEMINI-CALL] 2026-09-19T20:58:40.402Z call=interview-chat success=true model_used=gemini-flash-lite-latest model_index=1 attempts=1 latency=7077ms prompt_chars=447
