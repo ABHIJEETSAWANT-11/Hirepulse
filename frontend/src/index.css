@@ -4,6 +4,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+
 :root {
   /* HireFlow light theme — olive-green primary, ink text, soft slate surfaces */
   --background: hsl(0 0% 100%);    
