@@ -39,11 +39,11 @@ const upload = multer({
 
 const router = express.Router()
 
-router.post("/analyze-resume/", aiLimiter, upload.single("file"), analyzeResume)
-router.get("/job-recommendations",  aiLimiter, getJobs)
-router.post("/interview/chat", aiLimiter, interviewChat)
-router.post("/interview/report",  aiLimiter, interviewReport)
-router.get("/interview/status",  aiLimiter, getInterviewStatus)
+router.post("/analyze-resume/",  upload.single("file"), analyzeResume)
+router.get("/job-recommendations", getJobs)
+router.post("/interview/chat",  interviewChat)
+router.post("/interview/report",   interviewReport)
+router.get("/interview/status",   getInterviewStatus)
 router.get("/interview/history",  getInterviewHistory)
 
 export default router
