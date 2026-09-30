@@ -11,6 +11,8 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
+      index: true,
     },
     password: {
       type: String,
@@ -18,8 +20,25 @@ const userSchema = mongoose.Schema(
     },
     userType: {
       type: String,
-      enum: ['student', 'hr'],
+      enum: ['student'],
       default: 'student',
+    },
+    // Extended profile schema
+    accountType: {
+      type: String,
+      enum: ['demo', 'real'],
+      default: 'real',
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    profileData: {
+      resumeScore: { type: Number, default: 0 },
+      mockCount: { type: Number, default: 0 },
+      skillBreakdown: mongoose.Schema.Types.Mixed,
+      jobMatches: { type: Array, default: [] },
+      lastLogin: { type: Date, default: null },
     },
   },
   {

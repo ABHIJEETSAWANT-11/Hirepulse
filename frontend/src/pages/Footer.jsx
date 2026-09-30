@@ -1,75 +1,90 @@
-import { FaTwitter, FaLinkedin, FaGithub, FaInstagram } from "react-icons/fa";
+import Logo from "@/components/Logo";
+import { Github, Linkedin, Twitter, Instagram } from "lucide-react";
+
+const columns = [
+  {
+    title: "Product",
+    links: ["Resume Lab", "Mock Interviews", "Job Matches", "DSA Top 75", "Scheduler"],
+  },
+  {
+    title: "Resources",
+    links: ["Prep Guide", "Interview Library", "Community", "Help Center"],
+  },
+  {
+    title: "Legal",
+    links: ["Privacy Policy", "Terms of Service", "Cookie Policy"],
+  },
+];
 
 export default function Footer() {
   return (
-    <footer className="relative w-full bg-white text-foreground border-t border-gray-100">
-      <div className="container relative z-10 mx-auto px-6 py-12 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-          {/* Company Info */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-base font-bold text-white">
-                H
-              </span>
-              <span className="text-lg font-bold tracking-tight text-ink">Hire Pulse.</span>
-            </div>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Empowering your career journey with AI-driven interview preparation and resume analysis. Be ready for what's next.
+    <footer className="bg-paper">
+      <div className="mx-auto w-full max-w-7xl px-6 pb-10 pt-16 lg:pt-20">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+          {/* Brand */}
+          <div>
+            <Logo size={28} />
+            <p className="mt-4 max-w-[300px] text-[13px] leading-relaxed text-black/60">
+              One focused workspace for placement season — mock interviews,
+              resume scoring, job matches, and DSA practice.
             </p>
-            <div className="flex space-x-4 pt-2">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <FaTwitter size={20} />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <FaLinkedin size={20} />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <FaGithub size={20} />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <FaInstagram size={20} />
-              </a>
+            <div className="mt-6 flex space-x-2">
+              {[Twitter, Linkedin, Github, Instagram].map((Icon, i) => (
+                <a
+                  key={i}
+                  href="#"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-black/50 transition-all hover:-translate-y-px hover:border-black/20 hover:text-ink"
+                  aria-label="Social link"
+                >
+                  <Icon size={14} strokeWidth={1.8} />
+                </a>
+              ))}
+            </div>
+            <div className="mt-6 flex items-center gap-2">
+              <span className="dot-live" />
+              <span className="text-[11px] font-semibold text-black/40">
+                Built for the 2026 placement season
+              </span>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-6 text-ink">Product</h3>
-            <ul className="space-y-3 text-sm">
-              <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Features</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Pricing</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Testimonials</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Integration</a></li>
-            </ul>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h3 className="text-lg font-semibold mb-6 text-ink">Resources</h3>
-            <ul className="space-y-3 text-sm">
-              <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Blog</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Community</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Help Center</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">API Docs</a></li>
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div>
-            <h3 className="text-lg font-semibold mb-6 text-ink">Legal</h3>
-            <ul className="space-y-3 text-sm">
-              <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Cookie Policy</a></li>
-            </ul>
-          </div>
+          {/* Link columns */}
+          {columns.map((col) => (
+            <div key={col.title}>
+              <h3 className="text-[11px] font-bold uppercase tracking-widest text-black/40">
+                {col.title}
+              </h3>
+              <ul className="mt-5 space-y-3">
+                {col.links.map((link) => (
+                  <li key={link}>
+                    <a
+                      href="#"
+                      className="text-[13px] font-medium text-black/60 transition-colors hover:text-ink"
+                    >
+                      {link}
+                    </a>
+                  </li>
+                 ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-gray-100 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Hire Pulse. All rights reserved.</p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <span>Made with ❤️ for students</span>
+        {/* Bottom band */}
+        <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-black/5 pt-7 sm:flex-row sm:items-center">
+          <p className="text-[12px] text-black/40">
+            &copy; {new Date().getFullYear()} HirePulse. All rights reserved.
+          </p>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            {["Privacy", "Terms", "Status", "Contact"].map((l) => (
+              <a
+                key={l}
+                href="#"
+                className="text-[12px] text-black/40 transition-colors hover:text-ink"
+              >
+                {l}
+              </a>
+            ))}
           </div>
         </div>
       </div>

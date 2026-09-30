@@ -11,9 +11,6 @@ import JobRecommendations from '@/pages/JobRecommendations'
 import Interview from '@/pages/Interview'
 import Top75 from '@/pages/Top75'
 import StudentLoginPage from '@/pages/StudentLogin'
-import HRLoginPage from '@/pages/HRLogin'
-import HRDashboard from '@/pages/HRDashboard'
-import HRRegisterPage from '@/pages/HRRegister'
 import Profile from '@/pages/Profile'
 import Settings from '@/pages/Settings'
 
@@ -26,9 +23,7 @@ function Routings() {
           <Route path="/resume" element={<AnalyzeResume />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login/student" element={<StudentLoginPage />} />
-          <Route path="/login/hr" element={<HRLoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/register/hr" element={<HRRegisterPage />} />
           <Route path="/app" element={<Layout />} >
             <Route index element={<Dashboard />} />
             <Route path="interview" element={<Interview />} />
@@ -38,7 +33,6 @@ function Routings() {
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
           </Route>
-          <Route path="/hr" element={<HRDashboard />} />
         </Routes>
       </Router>
     </div>

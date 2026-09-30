@@ -1,11 +1,15 @@
 import express from "express"
 import dotenv from "dotenv"
+import rateLimit from "express-rate-limit"
 import userRoutes from "./routes/userRoutes.js"
 import aiRoutes from "./routes/aiRoutes.js"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 dotenv.config()
-const PORT = process.env.PORT || 3000
+console.log("Gemini API key loaded:", !!process.env.GEMINI_API_KEY);
+// Number() guards against bogus inherited values like PORT=0 (never a valid
+// listen port here); .env should provide PORT=3000 in normal setups.
+const PORT = Number(process.env.PORT) || 3000
 import connectDB from "./config/db.js"
 
 if (process.env.MONGO_URI) {
@@ -20,6 +24,16 @@ if (process.env.MONGO_URI) {
 }
 
 const app = express()
+
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests from this IP, please try again after 15 minutes." },
+})
+
+app.use(globalLimiter)
 
 const allowedOrigins = [
   "http://localhost:5173",

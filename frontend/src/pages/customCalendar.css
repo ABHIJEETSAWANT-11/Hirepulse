@@ -1,30 +1,61 @@
-/* customCalendar.css — HireFlow light theme */
+/* customCalendar.css — HirePulse v2 (greens #3A5A1E / #6BAE3A, realistic shadows) */
 
-.crazy-calendar {
-    background-color: #ffffff;
-    border-radius: 16px;
-    padding: 10px;
-    color: #0f172a;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 10px 30px -15px rgba(10, 10, 10, 0.15);
-  }
+.custom-calendar-styles {
+  color: #0f0f0f;
+}
 
-  .crazy-calendar .react-calendar__tile {
-    background: transparent;
-    border-radius: 10px;
-    color: #334155;
-    transition: all 0.3s ease;
-  }
+.custom-calendar-styles .react-calendar__navigation {
+  margin-bottom: 8px;
+}
 
-  .crazy-calendar .react-calendar__tile--active {
-    background: #77A719;
-    color: white;
-    font-weight: bold;
-    border-radius: 12px;
-    box-shadow: 0 4px 14px rgba(119, 167, 25, 0.4);
-  }
+.custom-calendar-styles .react-calendar__navigation button {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #0f0f0f;
+  border-radius: 10px;
+  min-width: 32px;
+}
 
-  .crazy-calendar .react-calendar__tile:hover {
-    background-color: rgba(119, 167, 25, 0.12);
-    transform: scale(1.05);
-  }
+.custom-calendar-styles .react-calendar__navigation button:hover,
+.custom-calendar-styles .react-calendar__navigation button:focus {
+  background: rgba(15, 15, 15, 0.05);
+}
+
+.custom-calendar-styles .react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(15, 15, 15, 0.4);
+}
+
+.custom-calendar-styles .react-calendar__tile {
+  background: transparent;
+  border-radius: 10px;
+  color: #334155;
+  font-size: 12px;
+  padding: 8px 4px;
+  transition: background 0.2s ease;
+}
+
+.custom-calendar-styles .react-calendar__tile--active {
+  background: #3a5a1e;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(58, 90, 30, 0.25), 0 4px 16px rgba(58, 90, 30, 0.15);
+}
+
+.custom-calendar-styles .react-calendar__tile:hover {
+  background-color: rgba(58, 90, 30, 0.1);
+}
+
+.custom-calendar-styles .react-calendar__tile--now {
+  background: rgba(107, 174, 58, 0.15);
+  font-weight: 700;
+}
+
+.custom-calendar-styles .react-calendar__tile--neighboringMonth {
+  color: rgba(15, 15, 15, 0.25);
+}

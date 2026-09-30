@@ -194,4 +194,19 @@ console.log("Test 7: per-call log lines present")
   check("[GEMINI-CALL] summary line logged", !!callLine)
 }
 
+console.log("Test 8: multi-key fallback — key 1 rejected/exhausted → falls back to key 2 and succeeds")
+{
+  let keyCalls = []
+  installMock((_n, model) => {
+    // Determine key from URL config if possible
+    keyCalls.push(model)
+    if (keyCalls.length <= 1) {
+      return { status: 400, data: invalidKey400() }
+    }
+    return { status: 200, data: ok200("Success from key 2") }
+  })
+  const res = await callGeminiWithFallback("prompt", ["invalid-key-1", "valid-key-2"], { label: "t8" })
+  check("multi-key fallback succeeded on key 2", res.includes("Success from key 2"), res)
+}
+
 console.log(`\n${passed} checks passed${process.exitCode ? " (with failures)" : ""}`)

@@ -19,12 +19,9 @@ export function RegisterForm({ className, userType = "student", ...rest }) {
   const navigate = useNavigate();
   const { setUser } = useUser();
 
-  const isHR = userType === "hr";
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [company, setCompany] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -34,7 +31,6 @@ export function RegisterForm({ className, userType = "student", ...rest }) {
     setLoading(true);
     try {
       const payload = { name, email, password, userType };
-      if (isHR && company) payload.company = company;
 
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL_NODE}/api/users`,
@@ -44,7 +40,7 @@ export function RegisterForm({ className, userType = "student", ...rest }) {
       const { _id, name: userName, email: userEmail, userType: type } = response.data;
       setUser({ _id, name: userName, email: userEmail, userType: type || userType });
 
-      navigate(isHR ? "/hr" : "/app");
+      navigate("/app");
     } catch (err) {
       const msg = err?.response?.data?.message;
       if (msg === "User already exists") {
@@ -62,12 +58,10 @@ export function RegisterForm({ className, userType = "student", ...rest }) {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
-            {isHR ? "Create HR Account" : "Create your free account"}
+            Create your free account
           </CardTitle>
           <CardDescription>
-            {isHR
-              ? "Sign up as an HR professional to manage candidates & interviews"
-              : "Sign up as a student — no credit card required"}
+            Sign up as a student — no credit card required
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -84,32 +78,19 @@ export function RegisterForm({ className, userType = "student", ...rest }) {
                 <Input
                   id="name"
                   type="text"
-                  placeholder={isHR ? "e.g. Ananya Sharma" : "e.g. Abhijeet Sawant"}
+                  placeholder="e.g. Abhijeet Sawant"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
                 />
               </div>
 
-              {isHR && (
-                <div className="grid gap-2">
-                  <Label htmlFor="company">Company Name</Label>
-                  <Input
-                    id="company"
-                    type="text"
-                    placeholder="e.g. Infosys, TCS, Startup Inc."
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                  />
-                </div>
-              )}
-
               <div className="grid gap-2">
-                <Label htmlFor="email">Work Email</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder={isHR ? "hr@company.com" : "you@example.com"}
+                  placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -131,37 +112,23 @@ export function RegisterForm({ className, userType = "student", ...rest }) {
 
               <Button
                 type="submit"
-                className={`w-full rounded-full ${
-                  isHR
-                    ? "bg-ink text-white hover:bg-gray-800"
-                    : "bg-primary text-white hover:bg-primary-bright hover:text-ink"
-                }`}
+                className="w-full rounded-full bg-primary text-white hover:bg-primary-bright hover:text-ink"
                 disabled={loading}
               >
                 {loading
                   ? "Creating account…"
-                  : isHR
-                    ? "Create HR Account"
-                    : "Sign Up — It's Free"}
+                  : "Sign Up — It's Free"}
               </Button>
             </div>
 
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
               <a
-                href={isHR ? "/login/hr" : "/login/student"}
+                href="/login/student"
                 className="text-primary font-medium underline underline-offset-4 hover:no-underline"
               >
                 Log in
               </a>
-              {!isHR && (
-                <>
-                  {" · "}
-                  <a href="/register/hr" className="text-primary font-medium underline underline-offset-4 hover:no-underline">
-                    Sign up as HR
-                  </a>
-                </>
-              )}
             </div>
           </form>
         </CardContent>

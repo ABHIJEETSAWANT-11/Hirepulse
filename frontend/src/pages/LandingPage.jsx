@@ -5,6 +5,7 @@ import FeaturesGrid from './Feature'
 import MeetingsShowcase from './Meeting'
 import ResumeAnalyzer from './ResumeAnalyzer'
 import PrivacyProtection from './PrivacyProtection'
+import FinalCTA from './FinalCTA'
 import Footer from './Footer'
 
 function LandingPage() {
@@ -13,10 +14,11 @@ function LandingPage() {
       <Navbar />
       <Hero />
       <FeaturesGrid />
-      <MeetingsShowcase/>
-      <ResumeAnalyzer/>
-      <PrivacyProtection/>
-      <Footer/>
+      <MeetingsShowcase />
+      <ResumeAnalyzer />
+      <PrivacyProtection />
+      <FinalCTA />
+      <Footer />
      </>
   )
 }

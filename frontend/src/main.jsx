@@ -4,6 +4,7 @@ import axios from 'axios'
 import './index.css'
 import App from './App.jsx'
 import { UserProvider } from './context/UserContext.jsx'
+import { ToastHost } from './components/Toast.jsx'
 
 // Send cookies with every request (required for JWT auth)
 axios.defaults.withCredentials = true
@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <UserProvider>
       <App />
+      <ToastHost />
     </UserProvider>
   </StrictMode>,
 )

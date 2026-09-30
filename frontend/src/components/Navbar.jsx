@@ -1,99 +1,105 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import Logo from "@/components/Logo";
 
-const NAV_LINKS = ["Home", "Features", "Pricing", "Company", "Blog"];
+const NAV_LINKS = [
+  { label: "Product", href: "#product" },
+  { label: "How it works", href: "#scheduler" },
+  { label: "Privacy", href: "#privacy" },
+];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
+  const scrollTo = (href) => {
+    const el = document.querySelector(href);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+    setIsOpen(false);
+  };
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur">
-      <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-        {/* Logo — HireFlow-style mark */}
-        <div
-          className="flex items-center gap-2.5 cursor-pointer"
-          onClick={() => navigate("/")}
-        >
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-base font-bold text-white">
-            H
-          </span>
-          <span className="text-lg font-bold tracking-tight text-ink">Hire Pulse.</span>
-        </div>
+    <nav className="sticky top-0 z-50 border-b border-black/5 bg-paper/90 backdrop-blur-sm">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-6">
+        {/* Logo */}
+        <Link to="/" aria-label="HirePulse home">
+          <Logo size={28} />
+        </Link>
 
         {/* Desktop Navigation */}
-        <ul className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-500">
+        <ul className="hidden items-center gap-8 text-[14px] font-medium text-black/50 md:flex">
           {NAV_LINKS.map((item) => (
-            <li
-              key={item}
-              className="hover:text-ink transition-colors cursor-pointer"
-            >
-              {item}
+            <li key={item.label}>
+              <button
+                onClick={() => scrollTo(item.href)}
+                className="transition-colors hover:text-ink"
+              >
+                {item.label}
+              </button>
             </li>
           ))}
         </ul>
 
         {/* Login & CTA (Desktop) */}
-        <div className="hidden md:flex items-center gap-4">
-          <Button
-            variant="ghost"
+        <div className="hidden items-center gap-3 md:flex">
+          <button
             onClick={() => navigate("/login")}
-            className="text-gray-500 hover:text-ink"
+            className="h-9 rounded-full px-4 text-[13px] font-semibold text-black/60 transition-colors hover:text-ink"
           >
-            Log In
-          </Button>
-          <Button
+            Log in
+          </button>
+          <button
             onClick={() => navigate("/register")}
-            className="rounded-full bg-ink px-6 py-2.5 text-white shadow-none hover:bg-gray-800"
+            className="h-9 rounded-full bg-ink px-5 text-[13px] font-semibold text-white shadow-real-sm transition-all hover:-translate-y-px hover:bg-black hover:shadow-real"
           >
-            Get Started
-          </Button>
+            Get started
+          </button>
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-ink text-2xl"
+          className="text-ink md:hidden"
           onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle menu"
         >
-          {isOpen ? <FiX /> : <FiMenu />}
+          {isOpen ? <FiX size={22} /> : <FiMenu size={22} />}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="absolute top-16 left-0 w-full bg-white/95 backdrop-blur-md border-b border-gray-100 p-6 flex flex-col gap-4 md:hidden">
-          {NAV_LINKS.map((item) => (
-            <a
-              key={item}
-              href="#"
-              className="text-lg font-medium text-gray-500 hover:text-ink transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              {item}
-            </a>
-          ))}
-          <div className="flex flex-col gap-3 mt-4">
-            <Button
-              variant="outline"
-              onClick={() => {
-                navigate("/login");
-                setIsOpen(false);
-              }}
-              className="w-full justify-center rounded-full"
-            >
-              Log In
-            </Button>
-            <Button
-              onClick={() => {
-                navigate("/register");
-                setIsOpen(false);
-              }}
-              className="w-full justify-center rounded-full bg-ink text-white hover:bg-gray-800"
-            >
-              Get Started
-            </Button>
+        <div className="border-b border-black/5 bg-paper p-6 md:hidden">
+          <div className="flex flex-col gap-1">
+            {NAV_LINKS.map((item) => (
+              <button
+                key={item.label}
+                onClick={() => scrollTo(item.href)}
+                className="rounded-lg py-2.5 text-left text-[15px] font-medium text-black/60 hover:text-ink"
+              >
+                {item.label}
+              </button>
+            ))}
+            <div className="mt-4 flex flex-col gap-3">
+              <button
+                onClick={() => {
+                  navigate("/login");
+                  setIsOpen(false);
+                }}
+                className="h-10 rounded-full border border-black/10 bg-white text-[13px] font-semibold text-ink shadow-real-sm"
+              >
+                Log in
+              </button>
+              <button
+                onClick={() => {
+                  navigate("/register");
+                  setIsOpen(false);
+                }}
+                className="h-10 rounded-full bg-ink text-[13px] font-semibold text-white shadow-real-sm"
+              >
+                Get started
+              </button>
+            </div>
           </div>
         </div>
       )}

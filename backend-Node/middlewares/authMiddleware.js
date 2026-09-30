@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken"
 import asyncHandler from "express-async-handler"
 import User from "../models/userModel.js"
-import { DEMO_USER_ID, DEMO_EMAIL, DEMO_USER } from "../config/demoUser.js"
+import { DEMO_ACCOUNTS } from "../config/demoUser.js"
 
 const protect = asyncHandler(async (req, res, next) => {
   let token
@@ -12,14 +12,17 @@ const protect = asyncHandler(async (req, res, next) => {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
-      // Demo account is code-only (no DB document exists for it).
-      if (decoded.userId === DEMO_USER_ID) {
+      // Demo accounts are code-only (no DB documents exist for them).
+      const demoAccount = DEMO_ACCOUNTS.find((acc) => acc.id === decoded.userId)
+      if (demoAccount) {
         req.user = {
-          _id: DEMO_USER_ID,
-          id: DEMO_USER_ID,
-          name: DEMO_USER.name,
-          email: DEMO_EMAIL,
-          userType: DEMO_USER.userType,
+          _id: demoAccount.id,
+          id: demoAccount.id,
+          name: demoAccount.name,
+          email: demoAccount.email,
+          userType: demoAccount.userType,
+          accountType: "demo",
+          profileData: demoAccount.profileData,
         }
         return next()
       }
@@ -37,4 +40,14 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 })
 
-export { protect }
+const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.userType)) {
+      res.status(403)
+      throw new Error("Not authorized for this action")
+    }
+    next()
+  }
+}
+
+export { protect, restrictTo }

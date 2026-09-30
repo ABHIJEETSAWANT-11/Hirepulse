@@ -1,7 +1,8 @@
 import asyncHandler from "express-async-handler"
 import User from "../models/userModel.js"
 import generateToken from "../utils/generateToken.js"
-import { isDemoCredentials, DEMO_USER_ID, DEMO_EMAIL, DEMO_PASSWORD, DEMO_USER } from "../config/demoUser.js"
+import { findDemoAccount, DEMO_ACCOUNTS } from "../config/demoUser.js"
+import MetricSnapshot from "../models/metricSnapshotModel.js"
 
 // @desc user token
 // route /api/users/auth
@@ -9,22 +10,26 @@ import { isDemoCredentials, DEMO_USER_ID, DEMO_EMAIL, DEMO_PASSWORD, DEMO_USER }
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body
 
-  // Code-only demo account — no MongoDB required. Checked before the DB
-  // lookup so login works even when the database is unreachable.
-  if (isDemoCredentials(email, password)) {
-    generateToken(res, DEMO_USER_ID)
+  // Code-only demo accounts — no MongoDB required.
+  // Checked before the DB lookup so login works even when the database is
+  // unreachable. A real JWT cookie is still issued so protected routes work.
+  const demoAccount = findDemoAccount(email, password)
+  if (demoAccount) {
+    generateToken(res, demoAccount.id)
     return res.status(200).json({
-      _id: DEMO_USER_ID,
-      name: DEMO_USER.name,
-      email: DEMO_EMAIL,
-      userType: DEMO_USER.userType,
-      demo: true,
+      _id: demoAccount.id,
+      name: demoAccount.name,
+      email: demoAccount.email,
+      userType: demoAccount.userType,
+      accountType: "demo",
+      profileData: demoAccount.profileData,
     })
   }
 
   // Demo email with a wrong password: deny immediately without touching the
   // DB (also avoids a confusing 503 when the database happens to be down).
-  if (String(email || "").trim().toLowerCase() === DEMO_EMAIL && password !== DEMO_PASSWORD) {
+  const normalizedEmail = String(email || "").trim().toLowerCase()
+  if (DEMO_ACCOUNTS.some((acc) => acc.email === normalizedEmail)) {
     res.status(401)
     throw new Error("Invalid email or password")
   }
@@ -34,19 +39,50 @@ const authUser = asyncHandler(async (req, res) => {
     user = await User.findOne({ email })
   } catch (err) {
     // MongoDB unreachable — a raw 500 here would confuse users; the demo
-    // account is the guaranteed-working path when the DB is down.
+    // accounts are the guaranteed-working path when the DB is down.
     res.status(503)
-    throw new Error("Database unavailable — use the demo login: abc@gmail.com / ABC123")
+    throw new Error("Database unavailable — use a demo account from the login page")
   }
 
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id)
+
+    // Stamp lastLogin in profileData — non-fatal if it fails
+    if (!user.profileData) user.profileData = {}
+    user.profileData.lastLogin = new Date()
+    try {
+      await user.save()
+    } catch {
+      // saving lastLogin is best-effort only
+    }
+
+    // Fetch recent snapshots to compute deltas on the dashboard
+    let pastMetrics = {}
+    try {
+      const oneWeekAgo = new Date()
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+      
+      const snapshots = await MetricSnapshot.find({ 
+        userId: String(user._id),
+        weekOf: { $gte: oneWeekAgo } 
+      }).sort({ weekOf: -1 })
+      
+      for (const snap of snapshots) {
+        if (pastMetrics[snap.metric] === undefined) {
+          pastMetrics[snap.metric] = snap.value
+        }
+      }
+    } catch {
+      // Best effort
+    }
 
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       userType: user.userType,
+      accountType: user.accountType || "real",
+      profileData: { ...(user.profileData || {}), pastMetrics },
     })
   } else {
     res.status(401)
@@ -87,11 +123,21 @@ const registerUser = asyncHandler(async (req, res) => {
 
   generateToken(res, user._id)
 
+  if (!user.profileData) user.profileData = {}
+  user.profileData.lastLogin = new Date()
+  try {
+    await user.save()
+  } catch {
+    // best-effort
+  }
+
   res.status(201).json({
     _id: user._id,
     name: user.name,
     email: user.email,
     userType: user.userType,
+    accountType: user.accountType || "real",
+    profileData: user.profileData || null,
   })
 })
 
@@ -110,12 +156,52 @@ const logoutUser = asyncHandler(async (req, res) => {
 // route /api/users/profile
 // @method get
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = {
-    _id: req.user.id,
-    name: req.user.name,
-    email: req.user.email,
+  // Demo accounts have no DB document — serve the code-only profile
+  const demoAccount = DEMO_ACCOUNTS.find((acc) => acc.id === (req.user?.id || req.user?._id))
+  if (demoAccount) {
+    return res.status(200).json({
+      _id: demoAccount.id,
+      name: demoAccount.name,
+      email: demoAccount.email,
+      userType: demoAccount.userType,
+      accountType: "demo",
+      profileData: demoAccount.profileData,
+    })
   }
-  res.status(200).json(user)
+
+  const user = await User.findById(req.user._id)
+  if (!user) {
+    res.status(404)
+    throw new Error("User not found")
+  }
+  // Fetch recent snapshots to compute deltas on the dashboard
+  let pastMetrics = {}
+  try {
+    const oneWeekAgo = new Date()
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+    
+    const snapshots = await MetricSnapshot.find({ 
+      userId: String(user._id),
+      weekOf: { $gte: oneWeekAgo } 
+    }).sort({ weekOf: -1 })
+    
+    for (const snap of snapshots) {
+      if (pastMetrics[snap.metric] === undefined) {
+        pastMetrics[snap.metric] = snap.value
+      }
+    }
+  } catch {
+    // Best effort
+  }
+
+  res.status(200).json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    userType: user.userType,
+    accountType: user.accountType || "real",
+    profileData: { ...(user.profileData || {}), pastMetrics },
+  })
 })
 
 // @desc update user profile
@@ -138,6 +224,8 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
+      accountType: updatedUser.accountType || "real",
+      profileData: updatedUser.profileData || null,
     })
   } else {
     res.status(404)

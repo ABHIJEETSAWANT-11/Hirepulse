@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, Briefcase } from "lucide-react";
+import { GraduationCap, Check } from "lucide-react";
+import Logo from "@/components/Logo";
 
 export function LoginSelection() {
   const navigate = useNavigate();
@@ -8,86 +9,48 @@ export function LoginSelection() {
   return (
     <div className="flex flex-col gap-6 w-full max-w-4xl">
       <div className="text-center mb-4">
-        <div className="mb-6 flex items-center justify-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-base font-bold text-white">
-            H
-          </span>
-          <span className="text-lg font-bold tracking-tight text-ink">Hire Pulse.</span>
+        <div className="mb-6 flex items-center justify-center">
+          <Logo size={34} />
         </div>
-        <h1 className="text-4xl font-bold text-ink mb-2">Welcome to HirePulse</h1>
-        <p className="text-gray-500">Select your login type to continue</p>
+        <h1 className="text-display text-4xl font-bold text-ink mb-2">Welcome to HirePulse</h1>
+        <p className="text-[14px] text-black/50">Select your login type to continue</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Student Login Card */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Student card */}
         <Card
-          className="cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-primary/50 border-2 bg-white shadow-sm"
+          className="card-real card-real-hover cursor-pointer border-2 bg-white py-6 md:col-span-2 md:max-w-md md:mx-auto"
           onClick={() => navigate('/login/student')}
         >
           <CardHeader className="text-center pb-4">
-            <div className="mx-auto mb-4 w-20 h-20 rounded-full bg-primary-tint flex items-center justify-center">
-              <GraduationCap className="w-10 h-10 text-primary" />
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[14px] bg-[#3A5A1E]/15 text-[#3A5A1E]">
+              <GraduationCap size={26} strokeWidth={1.6} />
             </div>
-            <CardTitle className="text-2xl text-ink">Student Login</CardTitle>
-            <CardDescription className="text-gray-500">
-              Access your dashboard, interviews, and career resources
+            <CardTitle className="text-[22px] text-ink">Student</CardTitle>
+            <CardDescription className="text-[13px] text-black/50">
+              Practice, analyze, and track your prep
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <div className="space-y-2 text-sm text-gray-500">
-              <p>✓ AI Mock Interviews</p>
-              <p>✓ Resume Analysis</p>
-              <p>✓ Job Recommendations</p>
-              <p>✓ Learning Resources</p>
+            <div className="mx-auto space-y-2 text-[13px] text-black/60 w-fit text-left">
+              {["AI mock interviews", "Resume analysis", "Job recommendations", "DSA Top 75"].map((f) => (
+                <p key={f} className="flex items-center gap-2">
+                  <Check size={13} strokeWidth={2.5} className="text-[#3A5A1E]" />
+                  {f}
+                </p>
+              ))}
             </div>
-            <button className="mt-6 w-full bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-primary-bright hover:text-ink transition-all duration-300">
+            <button className="mt-6 h-11 w-full rounded-full bg-pine px-6 text-[14px] font-bold text-white shadow-cta-green transition-all hover:-translate-y-px hover:bg-[#2F4A18]">
               Continue as Student
             </button>
-            <p className="mt-3 text-xs text-gray-400">
+            <p className="mt-3 text-xs text-black/40">
               New here?{" "}
               <a
                 href="/register"
-                className="text-primary hover:underline font-medium"
+                className="font-semibold text-[#3A5A1E] hover:underline"
                 onClick={(e) => { e.stopPropagation(); navigate('/register'); }}
               >
-                Create a Student Account
-              </a>
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* HR Login Card */}
-        <Card
-          className="cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-primary/50 border-2 bg-white shadow-sm"
-          onClick={() => navigate('/login/hr')}
-        >
-          <CardHeader className="text-center pb-4">
-            <div className="mx-auto mb-4 w-20 h-20 rounded-full bg-ink flex items-center justify-center">
-              <Briefcase className="w-10 h-10 text-white" />
-            </div>
-            <CardTitle className="text-2xl text-ink">HR Login</CardTitle>
-            <CardDescription className="text-gray-500">
-              Manage candidates, interviews, and recruitment
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <div className="space-y-2 text-sm text-gray-500">
-              <p>✓ Candidate Management</p>
-              <p>✓ Interview Scheduling</p>
-              <p>✓ Analytics & Reports</p>
-              <p>✓ Job Postings</p>
-            </div>
-            <button className="mt-6 w-full bg-ink text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition-all duration-300">
-              Continue as HR
-            </button>
-            <p className="mt-3 text-xs text-gray-400">
-              New here?{" "}
-              <a
-                href="/register/hr"
-                className="text-primary hover:underline font-medium"
-                onClick={(e) => { e.stopPropagation(); navigate('/register/hr'); }}
-              >
-                Create an HR Account
+                Create a student account
               </a>
             </p>
           </CardContent>

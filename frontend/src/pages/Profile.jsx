@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useUser } from "@/context/UserContext";
-import { BadgeCheck, Building2, GraduationCap, Mail, Pencil, Save, X } from "lucide-react";
+import { BadgeCheck, GraduationCap, Mail, Pencil, Save, X } from "lucide-react";
 
 export default function Profile() {
     const { user, setUser } = useUser();
@@ -9,7 +8,6 @@ export default function Profile() {
     const [editing, setEditing] = useState(false);
     const [name, setName] = useState(user?.name || "");
     const [email, setEmail] = useState(user?.email || "");
-    const [company, setCompany] = useState(user?.company || "");
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const [saved, setSaved] = useState(false);
@@ -25,15 +23,13 @@ export default function Profile() {
         );
     }
 
-    const isHR = user.userType === "hr";
-
     const handleSave = async (e) => {
         e.preventDefault();
         setSaving(true); setError(""); setSaved(false);
         try {
             // The backend API is register-only right now, so persist edits
             // client-side (localStorage via context) and reflect instantly.
-            setUser({ ...user, name, email, company });
+            setUser({ ...user, name, email });
             setSaved(true);
             setEditing(false);
         } catch {
@@ -48,8 +44,6 @@ export default function Profile() {
             <div className="max-w-3xl mx-auto space-y-6">
                 {/* Header card */}
                 <div className="bg-ink text-white rounded-2xl p-8 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-48 h-48 opacity-20 pointer-events-none"
-                        style={{ background: "radial-gradient(circle, #77A719, transparent 70%)" }} />
                     <div className="relative z-10 flex items-center gap-5">
                         <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center text-3xl font-bold flex-shrink-0">
                             {user.name?.charAt(0).toUpperCase()}
@@ -60,9 +54,7 @@ export default function Profile() {
                                 <BadgeCheck className="h-6 w-6 text-primary-bright flex-shrink-0" />
                             </h1>
                             <p className="text-white/60 text-sm mt-1 flex items-center gap-2">
-                                {isHR
-                                    ? <><Building2 className="h-4 w-4" /> HR Professional{user.company ? ` · ${user.company}` : ""}</>
-                                    : <><GraduationCap className="h-4 w-4" /> Student</>}
+                                <GraduationCap className="h-4 w-4" /> Student
                             </p>
                             <p className="text-white/40 text-xs mt-0.5 flex items-center gap-1.5">
                                 <Mail className="h-3.5 w-3.5" /> {user.email}
@@ -77,7 +69,7 @@ export default function Profile() {
                         <h2 className="text-lg font-bold text-ink">Account Details</h2>
                         {!editing && (
                             <button
-                                onClick={() => { setEditing(true); setSaved(false); setName(user.name || ""); setEmail(user.email || ""); setCompany(user.company || ""); }}
+                                onClick={() => { setEditing(true); setSaved(false); setName(user.name || ""); setEmail(user.email || ""); }}
                                 className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary-tint text-primary text-sm font-semibold hover:bg-primary hover:text-white transition-all"
                             >
                                 <Pencil className="h-3.5 w-3.5" /> Edit Profile
@@ -87,7 +79,7 @@ export default function Profile() {
 
                     {saved && (
                         <div className="mx-6 mt-4 px-4 py-2.5 rounded-xl bg-primary-tint text-primary text-sm font-medium">
-                            ✅ Profile updated.
+                            Profile updated.
                         </div>
                     )}
 
@@ -118,18 +110,6 @@ export default function Profile() {
                                     className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-ink placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                                 />
                             </div>
-                            {isHR && (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">Company</label>
-                                    <input
-                                        type="text"
-                                        value={company}
-                                        onChange={(e) => setCompany(e.target.value)}
-                                        placeholder="e.g. Infosys"
-                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-ink placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                                    />
-                                </div>
-                            )}
                             <div className="flex gap-3 pt-2">
                                 <button
                                     type="submit"
@@ -161,12 +141,6 @@ export default function Profile() {
                                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Account Type</p>
                                 <p className="text-ink font-medium capitalize">{user.userType || "student"}</p>
                             </div>
-                            {isHR && (
-                                <div className="p-4 rounded-xl bg-secondary border border-gray-100">
-                                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Company</p>
-                                    <p className="text-ink font-medium">{user.company || "—"}</p>
-                                </div>
-                            )}
                         </div>
                     )}
                 </div>

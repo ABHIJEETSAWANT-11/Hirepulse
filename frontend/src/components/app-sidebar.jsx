@@ -46,7 +46,7 @@ const mainItems = [
     icon: FileText,
   },
   {
-    title: "Job Recommentation",
+    title: "Job Recommendations",
     url: "/app/job",
     icon: Briefcase,
   },
@@ -68,6 +68,7 @@ const generalItems = [
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useUser } from '@/context/UserContext';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function AppSidebar() {
   const location = useLocation();
@@ -90,9 +91,8 @@ export default function AppSidebar() {
       <Sidebar className="bg-white text-gray-600 border-r border-gray-100 h-full flex flex-col">
         <SidebarContent className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center gap-2.5 px-4 py-4 mb-4">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-base font-bold text-white">H</span>
-            <span className="truncate font-semibold text-lg text-ink">Hire Pulse.</span>
+          <div className="flex items-center px-4 py-4 mb-4">
+            <BrandLogo className="h-8 w-auto max-w-[140px]" />
           </div>
 
           {/* Main menu */}
@@ -109,8 +109,8 @@ export default function AppSidebar() {
                         to={item.url}
                         className={`flex items-center gap-3 px-4 py-2 rounded-full transition-all ${
                           location.pathname === item.url
-                            ? "bg-primary text-white"
-                            : "text-gray-500 hover:bg-primary-tint hover:text-ink"
+                            ? "bg-pine text-white shadow-cta-green"
+                            : "text-black/50 hover:bg-[#EEF3E4] hover:text-ink"
                         }`}
                       >
                         <item.icon className="w-5 h-5" />
@@ -137,8 +137,8 @@ export default function AppSidebar() {
                         to={item.url}
                         className={`flex items-center gap-3 px-4 py-2 rounded-full transition-all ${
                           location.pathname === item.url
-                            ? "bg-primary text-white"
-                            : "text-gray-500 hover:bg-primary-tint hover:text-ink"
+                            ? "bg-pine text-white shadow-cta-green"
+                            : "text-black/50 hover:bg-[#EEF3E4] hover:text-ink"
                         }`}
                       >
                         <item.icon className="w-5 h-5" />
@@ -151,20 +151,14 @@ export default function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
 
-          {/* Dotted pattern background */}
-          <div className="relative flex-grow overflow-hidden">
-            <div className="absolute inset-0 opacity-40"
-              style={{
-                backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
-                backgroundSize: '12px 12px'
-              }} />
-          </div>
+          {/* Flexible spacer */}
+          <div className="flex-grow" />
 
           {/* User chip */}
           {user && (
             <div className="px-4 pb-2">
               <div className="flex items-center gap-3 bg-secondary border border-gray-100 rounded-xl px-3 py-2.5">
-                <div className="w-8 h-8 rounded-full bg-primary-tint flex items-center justify-center text-primary text-sm font-bold flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[#3A5A1E]/15 flex items-center justify-center text-[#3A5A1E] text-sm font-bold flex-shrink-0">
                   {user.name?.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">

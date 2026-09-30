@@ -134,7 +134,7 @@ export default function Top75() {
                         <svg className="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
                             <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(10,10,10,0.06)" strokeWidth="5" />
                             <circle cx="28" cy="28" r="22" fill="none" strokeWidth="5"
-                                stroke="#77A719"
+                                stroke="#3A5A1E"
                                 strokeDasharray={circumference}
                                 strokeDashoffset={circumference * (1 - progress / 100)}
                                 strokeLinecap="round"
@@ -176,7 +176,7 @@ export default function Top75() {
             {/* Problems List */}
             <div className="rounded-2xl overflow-hidden bg-white border border-gray-200/70 shadow-sm">
                 <div className="grid grid-cols-[2rem_2.5rem_1fr_6rem_9rem_2.5rem] gap-2 px-5 py-3 text-xs font-semibold uppercase tracking-wider bg-secondary/80 border-b border-gray-100 text-gray-400">
-                    <span>#</span><span>✓</span><span>Title</span><span>Difficulty</span><span>Topic</span><span className="text-center">Link</span>
+                    <span>#</span><span>Done</span><span>Title</span><span>Difficulty</span><span>Topic</span><span className="text-center">Link</span>
                 </div>
                 <div>
                     {filtered.length === 0 && <div className="py-12 text-center text-gray-400 text-sm">No problems match your filters.</div>}
@@ -188,7 +188,7 @@ export default function Top75() {
                                     solved ? "bg-primary-tint/40" : "hover:bg-secondary/70"
                                 }`}>
 
-                                <span className="text-xs text-gray-300 font-mono">{p.id}</span>
+                                <span className="text-xs text-gray-300">{p.id}</span>
                                 <button onClick={() => toggleDone(p.id)} className="flex items-center justify-center">
                                     {solved
                                         ? <CheckCircle2 className="w-5 h-5 text-primary" />

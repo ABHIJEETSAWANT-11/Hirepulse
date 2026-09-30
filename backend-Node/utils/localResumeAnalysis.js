@@ -159,7 +159,7 @@ const localResumeAnalysis = (resumeText, jobDescription = null) => {
   lines.push("  and Backend Engineer at product companies and startups. Aim at mid-size product")
   lines.push("  companies first — their ATS filters are friendlier to newer profiles.")
   lines.push("")
-  lines.push("(Offline analysis engine — set GOOGLE_API_KEY in backend-Node/.env for richer AI feedback.)")
+  lines.push("(Offline analysis engine — set GEMINI_API_KEY in backend-Node/.env for richer AI feedback.)")
   return lines.join("\n")
 }
 

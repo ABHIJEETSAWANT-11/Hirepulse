@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
-        userType: { type: String, enum: ["student", "hr"], default: "student" },
+        userType: { type: String, enum: ["student"], default: "student" },
     },
     { timestamps: true }
 );

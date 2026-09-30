@@ -2,3 +2,6 @@ node_modules
 .env
 venv
 dist
+.freebuff/
+*.log
+*.log.err

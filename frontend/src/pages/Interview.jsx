@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
 import { Mic, MicOff, Video, VideoOff, Play, Square, Send, FileText, Bot } from "lucide-react";
 
-const STATE_COLOR = { speaking: "#77A719", listening: "#0A0A0A", idle: "#77A719" };
+const STATE_COLOR = { speaking: "#3A5A1E", listening: "#0F2E22", idle: "#3A5A1E" };
 
 const Interview = () => {
     const [isInterviewing, setIsInterviewing] = useState(false);
@@ -42,7 +42,7 @@ const Interview = () => {
         let cancelled = false;
         const load = async () => {
             try {
-                const r = await fetch(`${import.meta.env.VITE_API_URL_NODE}/interview/status`);
+                const r = await fetch(`${import.meta.env.VITE_API_URL_NODE}/interview/status`, { credentials: "include" });
                 if (!r.ok) return;
                 const s = await r.json();
                 if (!cancelled) setAiStatus(s);
@@ -64,6 +64,12 @@ const Interview = () => {
         setWebcamEnabled(false);
     };
 
+    const handleUserSubmitRef = useRef(null);
+
+    useEffect(() => {
+        handleUserSubmitRef.current = handleUserSubmit;
+    });
+
     useEffect(() => {
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -77,7 +83,9 @@ const Interview = () => {
                 if (lastResult.isFinal) {
                     const text = lastResult[0].transcript;
                     setCurrentResponse(text);
-                    handleUserSubmit(text);
+                    if (handleUserSubmitRef.current) {
+                        handleUserSubmitRef.current(text);
+                    }
                 }
             };
             recognitionRef.current.onerror = (event) => {
@@ -88,12 +96,16 @@ const Interview = () => {
     }, []);
 
     const startListening = () => {
-        if (recognitionRef.current && !isListening) {
-            try { recognitionRef.current.start(); setIsListening(true); setInterviewerState("listening"); setErrorMsg(""); } catch (e) { console.error(e); }
+        if (!recognitionRef.current) {
+            setErrorMsg("Speech recognition is not supported in this browser. Please use Chrome, Edge, or type your answer.");
+            return;
+        }
+        if (!isListening) {
+            try { recognitionRef.current.start(); setIsListening(true); setInterviewerState("listening"); setErrorMsg(""); } catch (e) { console.error(e); setErrorMsg("Failed to start mic. Please check permissions."); }
         }
     };
     const stopListening = () => {
-        if (recognitionRef.current) { recognitionRef.current.stop(); setIsListening(false); if (interviewerState === "listening") setInterviewerState("idle"); }
+        if (recognitionRef.current) { recognitionRef.current.stop(); setIsListening(false); setInterviewerState(prev => prev === "listening" ? "idle" : prev); }
     };
 
     const startInterview = () => {
@@ -113,7 +125,7 @@ const Interview = () => {
             const historyText = conversationHistory.map(idx => `${idx.role}: ${idx.content}`).join("\n");
             // backend-Py absorbed into backend-Node — single API base now
             const response = await fetch(`${import.meta.env.VITE_API_URL_NODE}/interview/report`, {
-                method: "POST", headers: { "Content-Type": "application/json" },
+                method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ conversation: historyText })
             });
             if (!response.ok) {
@@ -160,8 +172,8 @@ ${e.message} — press "End & Get Report" again in a minute to retry.`);
         try {
             // backend-Py absorbed into backend-Node — single API base now
             const response = await fetch(`${import.meta.env.VITE_API_URL_NODE}/interview/chat`, {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: text })
+                method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: text, turn: conversationHistory.length + 1 })
             });
             if (!response.ok) {
                 let payload = null;
@@ -220,7 +232,7 @@ ${e.message} — press "End & Get Report" again in a minute to retry.`);
     };
 
     const stateColor = STATE_COLOR[interviewerState] || STATE_COLOR.idle;
-    const stateLabel = interviewerState === 'speaking' ? '🗣️ Speaking' : interviewerState === 'listening' ? '👂 Listening' : loading ? '🤔 Thinking' : '💼 Ready';
+    const stateLabel = interviewerState === 'speaking' ? 'Speaking' : interviewerState === 'listening' ? 'Listening' : loading ? 'Thinking' : 'Ready';
 
     return (
         <div className="min-h-screen p-6 flex flex-col gap-6 bg-secondary/60">
@@ -283,13 +295,13 @@ ${e.message} — press "End & Get Report" again in a minute to retry.`);
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="p-4 rounded-xl bg-teal-50 border border-teal-100">
-                                        <h3 className="font-semibold mb-3 flex items-center gap-2 text-teal-700">✅ Strengths</h3>
+                                        <h3 className="font-semibold mb-3 flex items-center gap-2 text-[#3A5A1E]">Strengths</h3>
                                         <ul className="list-disc list-inside text-gray-600 space-y-1 text-sm">
                                             {report.strengths?.map((item, i) => <li key={i}>{item}</li>)}
                                         </ul>
                                     </div>
                                     <div className="p-4 rounded-xl bg-primary-tint/60 border border-primary/20">
-                                        <h3 className="font-semibold mb-3 flex items-center gap-2 text-primary">🚀 Improvements</h3>
+                                        <h3 className="font-semibold mb-3 flex items-center gap-2 text-primary">Improvements</h3>
                                         <ul className="list-disc list-inside text-gray-600 space-y-1 text-sm">
                                             {report.improvements?.map((item, i) => <li key={i}>{item}</li>)}
                                         </ul>
@@ -342,13 +354,13 @@ ${e.message} — press "End & Get Report" again in a minute to retry.`);
                                 <div>
                                     <p className="text-white font-semibold mb-1">Camera Blocked</p>
                                     <p className="text-white/50 text-xs leading-relaxed max-w-[220px]">
-                                        Click the 🔒 lock icon in your browser's address bar → Site settings → Camera → Allow
+                                        Click the lock icon in your browser's address bar, then Site settings → Camera → Allow
                                     </p>
                                 </div>
                                 <button
                                     onClick={() => { setCamPermission("pending"); setWebcamEnabled(true); }}
-                                    className="px-4 py-2 rounded-full text-sm font-semibold bg-primary text-white transition-all hover:scale-105">
-                                    🔄 Retry Camera
+                                    className="px-4 py-2 rounded-full text-sm font-semibold bg-primary text-white transition-all hover:-translate-y-px hover:shadow-real">
+                                    Retry Camera
                                 </button>
                             </div>
                         ) : (
@@ -363,7 +375,7 @@ ${e.message} — press "End & Get Report" again in a minute to retry.`);
                         <button onClick={toggleWebcam}
                             className="p-3 rounded-full transition-all duration-200 hover:scale-110"
                             style={webcamEnabled
-                                ? { background: "#77A719", color: "#fff" }
+                                ? { background: "#3A5A1E", color: "#fff" }
                                 : { background: "rgba(0,0,0,0.06)", color: "#b91c1c", border: "1px solid rgba(185,28,28,0.25)" }}>
                             {webcamEnabled ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
                         </button>
@@ -371,7 +383,7 @@ ${e.message} — press "End & Get Report" again in a minute to retry.`);
                             className="p-3 rounded-full transition-all duration-200 hover:scale-110"
                             style={isListening
                                 ? { background: "#0A0A0A", color: "#fff", animation: "pulse 1s infinite" }
-                                : { background: "rgba(119,167,25,0.12)", border: "1px solid rgba(119,167,25,0.3)", color: "#77A719" }}>
+                                : { background: "rgba(58,90,30,0.12)", border: "1px solid rgba(58,90,30,0.3)", color: "#3A5A1E" }}>
                             {isListening ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
                         </button>
                     </div>
@@ -395,7 +407,7 @@ ${e.message} — press "End & Get Report" again in a minute to retry.`);
                                 <img src="/ai_interviewer_avatar.png" alt="AI Interviewer"
                                     className={`w-full h-full object-cover ${interviewerState === 'speaking' ? 'animate-speaking' : interviewerState === 'listening' ? 'animate-listening' : 'animate-idle'}`} />
                                 {interviewerState === 'speaking' && (
-                                    <div className="absolute inset-0 rounded-full border-4 animate-ping opacity-40" style={{ borderColor: "#77A719" }} />
+                                    <div className="absolute inset-0 rounded-full border-4 animate-ping opacity-40" style={{ borderColor: "#6BAE3A" }} />
                                 )}
                                 {interviewerState === 'listening' && (
                                     <div className="absolute inset-0 rounded-full border-4 animate-pulse" style={{ borderColor: "#0A0A0A" }} />
@@ -416,8 +428,8 @@ ${e.message} — press "End & Get Report" again in a minute to retry.`);
 
                     {/* Transcript */}
                     <div className="rounded-2xl p-4 flex flex-col min-h-[200px] bg-white border border-gray-200/70 shadow-sm">
-                        <h4 className="text-xs font-bold uppercase tracking-widest mb-2 text-teal-700">Conversation</h4>
-                        <div className="flex-grow whitespace-pre-wrap text-gray-500 leading-relaxed font-mono text-xs mb-3 overflow-y-auto max-h-[150px]">
+                        <h4 className="text-eyebrow text-teal-700 mb-2">Conversation</h4>
+                        <div className="flex-grow whitespace-pre-wrap text-gray-500 leading-relaxed text-sm mb-3 overflow-y-auto max-h-[150px]">
                             {transcript || "Start the interview to begin the conversation..."}
                         </div>
                         <form onSubmit={handleManualSubmit} className="flex gap-2 mt-auto">

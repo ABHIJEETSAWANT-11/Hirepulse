@@ -1,8 +1,63 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { ExternalLink, MapPin, Briefcase, Search, IndianRupee, Building2 } from "lucide-react";
+import { toast } from "@/components/Toast";
+import { ExternalLink, MapPin, Briefcase, Search, IndianRupee, Building2, TriangleAlert } from "lucide-react";
 
 const CITIES = ["All", "Bengaluru", "Mumbai", "Hyderabad", "Pune", "Chennai", "Gurugram"];
+
+/* Curated sample listings shown when the live job API is unavailable
+   (quota exhausted, key missing, or network down). Clearly labeled as
+   sample data — never presented as live listings. */
+const SAMPLE_JOBS = [
+  {
+    job_title: "Frontend Engineer",
+    employer_name: "Razorpay",
+    job_city: "Bengaluru",
+    job_country: "India",
+    job_employment_type: "FULLTIME",
+    job_min_salary: 1800000,
+    job_max_salary: 2800000,
+    job_description: "Build customer-facing payment flows in React with a focus on performance and accessibility.",
+    job_apply_link: "https://razorpay.com/jobs",
+    job_posted_at_datetime_utc: new Date(Date.now() - 2 * 86400000).toISOString(),
+  },
+  {
+    job_title: "Backend Developer",
+    employer_name: "Zerodha",
+    job_city: "Pune",
+    job_country: "India",
+    job_employment_type: "FULLTIME",
+    job_min_salary: 1500000,
+    job_max_salary: 2500000,
+    job_description: "Design low-latency trading APIs and services at scale using Node.js and PostgreSQL.",
+    job_apply_link: "https://zerodha.com/careers",
+    job_posted_at_datetime_utc: new Date(Date.now() - 5 * 86400000).toISOString(),
+  },
+  {
+    job_title: "Full Stack Developer",
+    employer_name: "CRED",
+    job_city: "Hyderabad",
+    job_country: "India",
+    job_employment_type: "FULLTIME",
+    job_min_salary: 2000000,
+    job_max_salary: 3200000,
+    job_description: "Ship features end-to-end across a React + Node stack for India's most design-led credit platform.",
+    job_apply_link: "https://careers.cred.club",
+    job_posted_at_datetime_utc: new Date(Date.now() - 8 * 86400000).toISOString(),
+  },
+  {
+    job_title: "Software Engineer",
+    employer_name: "Flipkart",
+    job_city: "Bengaluru",
+    job_country: "India",
+    job_employment_type: "FULLTIME",
+    job_min_salary: 1600000,
+    job_max_salary: 2600000,
+    job_description: "Work on large-scale e-commerce systems — search, cart, and checkout flows for 400M+ users.",
+    job_apply_link: "https://flipkartcareers.com",
+    job_posted_at_datetime_utc: new Date(Date.now() - 12 * 86400000).toISOString(),
+  },
+];
 
 const formatCTC = (min, max) => {
   if (!min && !max) return null;
@@ -18,11 +73,32 @@ const JobRecommendations = () => {
   const [cityFilter, setCityFilter] = useState("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [usingSample, setUsingSample] = useState(false);
+
+  const loadJobs = () => {
+    setLoading(true);
+    setError(null);
+    setUsingSample(false);
+    axios.get(`${import.meta.env.VITE_API_URL_NODE}/job-recommendations`)
+      .then((res) => {
+        const list = res.data.jobs || [];
+        setJobs(list);
+        setUsingSample(false);
+        setLoading(false);
+      })
+      .catch((err) => {
+        // Live API unavailable (quota/key/network) — fall back to clearly
+        // labeled sample listings so the page stays useful.
+        const detail = err?.response?.data?.error || err?.response?.data?.message;
+        setJobs(SAMPLE_JOBS);
+        setUsingSample(true);
+        setError(null);
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL_NODE}/job-recommendations`)
-      .then((res) => { setJobs(res.data.jobs || []); setLoading(false); })
-      .catch((err) => { setError("Failed to load jobs. Make sure the backend is running."); setLoading(false); console.error(err); });
+    loadJobs();
   }, []);
 
   const filtered = jobs.filter((job) => {
@@ -54,17 +130,53 @@ const JobRecommendations = () => {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-secondary/60">
-      <div className="text-center space-y-4">
-        <div className="w-14 h-14 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto" />
-        <p className="text-gray-500 font-medium">Loading job recommendations…</p>
+    <div className="min-h-screen p-6 md:p-8 space-y-6 bg-secondary/60">
+      {/* Header skeleton */}
+      <div className="flex items-center gap-3">
+        <div className="skeleton h-10 w-10 rounded-xl" />
+        <div className="skeleton h-8 w-72" />
+      </div>
+      <div className="skeleton h-4 w-56" />
+      {/* Filter skeleton */}
+      <div className="flex gap-3">
+        <div className="skeleton h-10 flex-1 rounded-full" />
+        <div className="skeleton h-10 w-24 rounded-full" />
+      </div>
+      {/* Card skeletons */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="card-real p-5 space-y-4">
+            <div className="flex items-center gap-4">
+              <div className="skeleton h-12 w-12 rounded-xl" />
+              <div className="flex-1 space-y-2">
+                <div className="skeleton h-4 w-3/4" />
+                <div className="skeleton h-3 w-1/2" />
+              </div>
+            </div>
+            <div className="skeleton h-3 w-full" />
+            <div className="skeleton h-3 w-5/6" />
+            <div className="skeleton h-9 w-full rounded-full" />
+          </div>
+        ))}
       </div>
     </div>
   );
 
   if (error) return (
-    <div className="min-h-screen flex items-center justify-center bg-secondary/60">
-      <p className="text-destructive font-medium">{error}</p>
+    <div className="min-h-screen flex items-center justify-center bg-secondary/60 p-6">
+      <div className="card-real max-w-md w-full p-8 text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#FEE2E2] text-[#B91C1C]">
+          <Briefcase size={20} strokeWidth={1.8} />
+        </div>
+        <h2 className="text-display text-xl font-bold text-ink">Couldn't load jobs</h2>
+        <p className="mt-2 text-[13px] leading-relaxed text-black/60">{error}</p>
+        <button
+          onClick={loadJobs}
+          className="mt-6 h-10 rounded-full bg-ink px-6 text-[13px] font-semibold text-white shadow-real-sm transition-all hover:-translate-y-px hover:bg-black"
+        >
+          Try again
+        </button>
+      </div>
     </div>
   );
 
@@ -82,6 +194,15 @@ const JobRecommendations = () => {
         <p className="text-gray-500 text-sm mt-1">
           <span className="font-bold text-primary">{filtered.length}</span> openings at top Indian tech companies
         </p>
+        {usingSample && (
+          <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-[13px] text-amber-800">
+            <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>
+              Live job service is unavailable right now — showing <strong>sample listings</strong> so you can explore the
+              experience. Real listings return automatically when the service recovers.
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Search + City Filter */}
@@ -110,7 +231,7 @@ const JobRecommendations = () => {
       {filtered.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
           <Briefcase className="w-12 h-12 mx-auto mb-3 opacity-30" />
-          <p className="text-lg font-medium">No jobs match your search 😕</p>
+          <p className="text-lg font-medium">No jobs match your search</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -130,7 +251,7 @@ const JobRecommendations = () => {
                   <div className="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden bg-secondary border border-gray-100">
                     {job.employer_logo ? (
                       <img src={job.employer_logo} alt={job.employer_name} className="w-full h-full object-contain p-1"
-                        onError={(e) => { e.target.style.display = "none"; e.target.parentNode.innerHTML = `<div style="color:#77A719;font-weight:bold;font-size:1.2rem;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${job.employer_name.charAt(0)}</div>`; }} />
+                        onError={(e) => { e.target.style.display = "none"; e.target.parentNode.innerHTML = `<div style="color:#3A5A1E;font-weight:bold;font-size:1.2rem;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${job.employer_name.charAt(0)}</div>`; }} />
                     ) : (
                       <div className="font-bold text-xl text-primary">{job.employer_name.charAt(0)}</div>
                     )}
@@ -168,7 +289,7 @@ const JobRecommendations = () => {
                   {job.job_description && <p className="text-xs line-clamp-3 leading-relaxed text-gray-500">{job.job_description}</p>}
                   {relTime && (
                     <p className="text-xs font-medium text-gray-400">
-                      🕐 Posted {relTime}
+                      Posted {relTime}
                     </p>
                   )}
                 </div>
