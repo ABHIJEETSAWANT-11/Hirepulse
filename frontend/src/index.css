@@ -1,9 +1,6 @@
 @import "tailwindcss";
-
 @plugin "tailwindcss-animate";
-
 @custom-variant dark (&:where(.dark, .dark *));
-
 :root {
   /* HirePulse v2 — realistic, editorial.
      Greens: darkest #3A5A1E · dark #5A8F2A · mid #6BAE3A · light #8BC53F
